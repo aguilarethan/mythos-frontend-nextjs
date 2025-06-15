@@ -6,6 +6,11 @@ export interface RegisterRequest {
     password: string;
 }
 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
 export async function registerAccount(data: RegisterRequest) {
     try {
         const response = await dotnetApi.post("/auth/register", data);
@@ -15,4 +20,16 @@ export async function registerAccount(data: RegisterRequest) {
             error.response?.data?.message || "Error al registrar usuario";
         throw new Error(message);
     }
+}
+
+export async function login(data: LoginRequest) {
+    try {
+        const response = await dotnetApi.post("/auth/login", data);
+        return response.data;
+    } catch (error: any) {
+        const message =
+            error.response?.data?.message || "Error al iniciar sesión";
+        throw new Error(message);
+    }
+
 }
