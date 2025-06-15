@@ -6,13 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { registerAccount } from "@/lib/api/dotnet/auth"
+import { register } from "@/services/auth-service"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,8 +29,7 @@ const registerFormSchema = z.object({
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"form">) {
   const [showPassword, setShowPassword] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const router = useRouter()
 
   const registerForm = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -42,14 +42,12 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
   })
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    setFormError(null)
-    setSuccessMessage(null)
     try {
-      const data = await registerAccount(values)
-      setSuccessMessage("Registro exitoso 🎉")
-      console.log("Usuario registrado:", data)
+      await register(values);
+      router.push("/login");
+      toast.success("Cuenta creada exitosamente. Por favor, inicia sesión.");
     } catch (error: any) {
-      setFormError(error.message)
+      toast.error(error.message || "Error al registrar usuario")
     }
   }
 
@@ -114,9 +112,6 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
             </FormItem>
           )}
         />
-
-        {formError && <p className="text-sm text-red-500">{formError}</p>}
-        {successMessage && <p className="text-sm text-green-600">{successMessage}</p>}
 
         <Button type="submit" className="w-full">
           Registrarse

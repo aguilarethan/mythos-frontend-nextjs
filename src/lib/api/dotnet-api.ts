@@ -7,4 +7,3 @@ export const dotnetApi = axios.create({
         "Accept": "application/json",
     }
 });
-
