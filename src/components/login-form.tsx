@@ -17,8 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { email } from "zod/v4-mini"
-import { login } from "@/lib/api/dotnet/auth"
+import { login } from "@/services/auth-service"
 
 
 const loginFormSchema = z.object({
