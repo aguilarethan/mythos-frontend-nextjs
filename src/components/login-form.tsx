@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 const loginFormSchema = z.object({
-  email: z.string().email("Email inválido").min(1, "El email es requerido"),
+  username: z.string().min(1, "El nombre de usuario es requerido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 })
 
@@ -34,7 +34,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
     resolver: zodResolver(loginFormSchema),
     mode: "onBlur",
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   })
@@ -63,12 +63,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
 
         <FormField
           control={loginForm.control}
-          name="email"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Correo electrónico</FormLabel>
+              <FormLabel>Nombre de usuario</FormLabel>
               <FormControl>
-                <Input placeholder="mythos@ejemplo.com" type="email" {...field} />
+                <Input placeholder="mythos" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
