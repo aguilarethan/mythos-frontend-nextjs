@@ -1,17 +1,18 @@
 import { LoginForm } from "@/components/login-form"
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
 
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
+        <div className="flex items-center gap-6 flex-grow md:flex-grow-0">
+          <Link href="/" className="flex items-center gap-2">
             <div className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-md">
-              <img src="/mythos-logo.png" alt="Logo" className="size-7" />
+              <img src="/mythos-logo.png" alt="Logo" className="size-9" />
             </div>
-            Mythos
-          </a>
+            <span className="font-bold text-sm">Mythos</span>
+          </Link>
         </div>
 
         <div className="flex flex-1 items-center justify-center">
