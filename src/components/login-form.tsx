@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { login } from "@/services/auth-service"
+import { login } from "@/services/auth/auth-service"
 
 
 const loginFormSchema = z.object({

@@ -1,15 +1,6 @@
-import { dotnetApi } from "../lib/api/dotnet-api";
+import { dotnetApi } from "../../lib/api/dotnet-api";
 
-export interface RegisterRequest {
-    username: string;
-    email: string;
-    password: string;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
+import { RegisterRequest, LoginRequest } from "./auth-interfaces";
 
 export async function register(data: RegisterRequest) {
     try {

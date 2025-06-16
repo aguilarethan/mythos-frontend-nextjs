@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { register } from "@/services/auth-service"
+import { register } from "@/services/auth/auth-service"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -44,8 +44,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
     try {
       await register(values);
-      router.push("/login");
       toast.success("Cuenta creada exitosamente. Por favor, inicia sesión.");
+      router.push("/login");  
     } catch (error: any) {
       toast.error(error.message || "Error al registrar usuario")
     }
