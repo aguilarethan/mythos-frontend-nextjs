@@ -27,7 +27,6 @@ export async function login(data: LoginRequest) {
 export async function checkAuth() {
   try {
     const response = await dotnetApi.get("/auth");
-    console.log("✅ Login exitoso", response);
     return response.data; 
   } catch (error: any) {
     throw new Error("No autenticado");
@@ -37,7 +36,6 @@ export async function checkAuth() {
 export async function logout() {
     try {
         const response = await dotnetApi.post("/auth/logout");
-        console.log("✅ Logout exitoso", response);
         return response.data;
     } catch (error: any) {
         const message = error.response?.data?.message || "Error al cerrar sesión";

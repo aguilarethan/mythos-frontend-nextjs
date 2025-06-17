@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/context/auth-context"
+import { AccountProvider } from "@/context/account-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,8 +29,10 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <Toaster />
-            {children}
+            <AccountProvider>
+              <Toaster />
+              {children}
+            </AccountProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
