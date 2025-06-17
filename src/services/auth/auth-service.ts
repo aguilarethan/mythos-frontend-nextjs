@@ -23,3 +23,13 @@ export async function login(data: LoginRequest) {
     }
 
 }
+
+export async function checkAuth() {
+  try {
+    const response = await dotnetApi.get("/auth");
+    console.log("✅ Login exitoso", response);
+    return response.data; 
+  } catch (error: any) {
+    throw new Error("No autenticado");
+  }
+}

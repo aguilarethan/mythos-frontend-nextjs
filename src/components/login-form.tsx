@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react"
 import { login } from "@/services/auth/auth-service"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useAuth } from "@/context/auth-context";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +29,7 @@ const loginFormSchema = z.object({
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
   const [showPassword, setShowPassword] = useState(false)
+  const { setIsLoggedIn } = useAuth();
   const router = useRouter()
 
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
@@ -42,6 +44,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     try {
       await login(values);
+      setIsLoggedIn(true); 
       toast.success("Sesión iniciada exitosamente.");
       router.push("/");  
     } catch (error: any) {

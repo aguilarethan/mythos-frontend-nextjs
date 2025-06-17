@@ -1,20 +1,33 @@
+"use client"
+
 import {
     NavigationMenu,
     NavigationMenuContent,
-    NavigationMenuIndicator,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    NavigationMenuViewport,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, SunMoon, Settings } from "lucide-react"
+import { Search, Settings } from "lucide-react"
 import Link from "next/link"
+import { ModeToggle } from "./mode-toggle"
+import { useAuth } from "@/context/auth-context"
 
 export function Navbar() {
+    const { isLoggedIn, isLoading, setIsLoggedIn } = useAuth();
+
+    console.log("¿Está logueado?", isLoggedIn)
+
+    if (isLoading) return null
+
+    const handleLogout = () => {
+        
+        setIsLoggedIn(false)
+    }
+
     return (
         <header className="w-full border-b bg-white dark:bg-black">
             <div className="max-w-5xl min-h-[65px] mx-auto px-4 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
@@ -82,11 +95,17 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon"><SunMoon className="w-6 h-6" /></Button>
-                    <Button variant="ghost" size="icon"><Settings className="w-6 h-6" /></Button>
-                    <Button asChild>
-                        <Link href="/login">Iniciar sesión</Link>
+                    <ModeToggle />
+                    <Button variant="ghost" size="icon">
+                        <Settings className="w-6 h-6" />
                     </Button>
+                    {isLoggedIn ? (
+                        <Button onClick={handleLogout}>Cerrar sesión</Button>
+                    ) : (
+                        <Button asChild>
+                            <Link href="/login">Iniciar sesión</Link>
+                        </Button>
+                    )}
                 </div>
 
             </div>
