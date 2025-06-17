@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -11,20 +12,18 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Settings } from "lucide-react"
-import Link from "next/link"
 import { ModeToggle } from "./mode-toggle"
-import { useAuth } from "@/context/auth-context"
+import { Search, Settings } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import { logout } from "@/services/auth/auth-service"
 
 export function Navbar() {
     const { isLoggedIn, isLoading, setIsLoggedIn } = useAuth();
 
-    console.log("¿Está logueado?", isLoggedIn)
-
     if (isLoading) return null
 
     const handleLogout = () => {
-        
+
         setIsLoggedIn(false)
     }
 
@@ -96,9 +95,13 @@ export function Navbar() {
 
                 <div className="flex items-center gap-4">
                     <ModeToggle />
-                    <Button variant="ghost" size="icon">
-                        <Settings className="w-6 h-6" />
-                    </Button>
+                    {isLoggedIn && (
+                        <Button asChild variant="ghost" size="icon">
+                            <Link href="/settings">
+                                <Settings className="h-5 w-5" />
+                            </Link>
+                        </Button>
+                    )}
                     {isLoggedIn ? (
                         <Button onClick={handleLogout}>Cerrar sesión</Button>
                     ) : (

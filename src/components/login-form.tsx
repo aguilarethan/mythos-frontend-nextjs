@@ -9,7 +9,7 @@ import { Eye, EyeOff } from "lucide-react"
 import { login } from "@/services/auth/auth-service"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 
 import { Button } from "@/components/ui/button"
 import {
