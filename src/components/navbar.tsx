@@ -22,9 +22,13 @@ export function Navbar() {
 
     if (isLoading) return null
 
-    const handleLogout = () => {
-
-        setIsLoggedIn(false)
+    async function handleLogout () {
+        try {
+            await logout();
+            setIsLoggedIn(false);
+        } catch (error: any) {
+            console.error("Error al cerrar sesión:", error);
+        }
     }
 
     return (
