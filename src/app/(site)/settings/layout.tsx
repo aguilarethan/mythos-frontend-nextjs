@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/shared/navbar";
 
 export default function SettingsLayout({
   children,
@@ -7,7 +6,6 @@ export default function SettingsLayout({
 }>) {
   return (
     <div>
-      <Navbar />
       <main className="antialiased">{children}</main>
     </div>
   );

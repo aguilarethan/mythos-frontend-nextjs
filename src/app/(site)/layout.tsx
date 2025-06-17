@@ -7,6 +7,7 @@ export default function SiteLayout({
 }>) {
   return (
     <div>
+      <Navbar />
       <main className="antialiased">
         {children}
       </main>
