@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { LogOut, Trash2, ArrowLeft } from "lucide-react";
-import { EditProfileForm } from "@/components/edit-profile-form";
+import { EditProfileForm } from "@/features/settings/components/edit-profile-form";
 
 export default function SettingsAccountPage() {
   const router = useRouter();
