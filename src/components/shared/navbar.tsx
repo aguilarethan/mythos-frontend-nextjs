@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { ModeToggle } from "./mode-toggle"
+import { ModeToggle } from "../mode-toggle"
 import { Search, Settings } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { logout } from "@/services/auth/auth-service"

@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/shared/navbar";
 
 export default function SiteLayout({
   children,
@@ -8,6 +8,7 @@ export default function SiteLayout({
   return (
     <div>
       <Navbar />
+
       <main className="antialiased">
         {children}
       </main>
