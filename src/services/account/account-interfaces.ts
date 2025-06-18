@@ -9,3 +9,8 @@ export interface Account {
 export interface ChangePasswordRequest {
     newPassword: string; 
 }
+
+export interface UpdateProfileRequest {
+    username: string; 
+    email: string;
+}

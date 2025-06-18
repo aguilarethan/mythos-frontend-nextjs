@@ -21,7 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { accountService } from "@/services/account/account-service-two";
+import { accountService } from "@/services/account/account-service";
 
 const profileFormSchema = z.object({
   username: z.string().min(1, "El nombre de usuario es requerido"),
