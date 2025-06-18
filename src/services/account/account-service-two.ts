@@ -1,6 +1,6 @@
 import { dotnetApi } from "@/lib/api/dotnet-api";
 
-import { updateProfileRequest } from "./account-interfaces";
+import { updateProfileRequest } from "./account-interfaces-two";
 import { AxiosError } from "axios";
 
 async function updateProfile(id: string, data: updateProfileRequest){

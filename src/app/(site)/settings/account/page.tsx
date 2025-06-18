@@ -3,13 +3,45 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { LogOut, Trash2, ArrowLeft } from "lucide-react";
+import { LogOut, ArrowLeft } from "lucide-react";
 import { EditProfileForm } from "@/features/settings/components/edit-profile-form";
+import { ChangePasswordForm } from "@/features/settings/components/change-password-form";
+import { logout } from "@/services/auth/auth-service";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 export default function SettingsAccountPage() {
   const router = useRouter();
+  const { isLoggedIn, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      toast.error("Debes iniciar sesión para acceder a esta página.");
+      router.replace("/login");
+    }
+  }, [isLoggedIn, isLoading, router]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Fue un gusto, esperamos verte pronto nuevamente.");
+      router.push("/login");
+    } catch {
+      toast.error(
+        "Lo sentimos pero ocurrio un error al intentar cerrar sesión, Intentelo nuevamente."
+      );
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Cargando datos del perfil...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 space-y-8 max-w-5xl m-auto">
@@ -42,8 +74,9 @@ export default function SettingsAccountPage() {
       <div>
         <h3 className="text-xl font-semibold mt-6 mb-2">Seguridad</h3>
         <Separator className="mb-4" />
-        <Card className="p-4">[Formulario de cambio de contraseña]</Card>
       </div>
+
+      <ChangePasswordForm />
 
       <div>
         <h3 className="text-xl font-semibold mt-6 mb-2">Acceso</h3>
@@ -53,21 +86,17 @@ export default function SettingsAccountPage() {
           <div>
             <p className="font-medium">Cerrar sesión</p>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Al cerrar la sesión deberás ingresar tu correo y contraseña para
-              poder acceder nuevamente
+              Al cerrar la sesión deberás ingresar tu nombre de usuario y
+              contraseña para poder acceder nuevamente
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="w-48"
-            onClick={() => alert("Sesión cerrada")}
-          >
+          <Button variant="outline" className="w-48" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             Cerrar sesión
           </Button>
         </div>
 
-        <div className="flex justify-between items-start flex-wrap gap-4 mt-4">
+        {/*<div className="flex justify-between items-start flex-wrap gap-4 mt-4">
           <div>
             <p className="text-red-500 font-medium">Eliminar cuenta</p>
             <p className="text-sm text-muted-foreground max-w-sm">
@@ -82,7 +111,7 @@ export default function SettingsAccountPage() {
             <Trash2 className="mr-2 h-4 w-4" />
             Eliminar cuenta
           </Button>
-        </div>
+        </div>*/}
       </div>
     </div>
   );
