@@ -78,7 +78,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
               <FormControl>
                 <Input placeholder="mythos" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
