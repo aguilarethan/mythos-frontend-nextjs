@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useAccount } from "@/hooks/use-account";
+
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { accountService } from "@/services/account/account-service-two";
+import { accountService } from "@/services/account/account-service";
 
 const profileFormSchema = z.object({
   username: z.string().min(1, "El nombre de usuario es requerido"),
@@ -31,9 +34,11 @@ export function EditProfileForm({
 }: React.ComponentProps<"form">) {
   const [isEditing, setIsEditing] = useState(false);
   const [originalValues, setOriginalValues] = useState({
-    username: "MythosPlatform",
-    email: "mythos@example.com",
+    username: "",
+    email: "",
   });
+
+  const { account, isLoading } = useAccount();
 
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -43,13 +48,24 @@ export function EditProfileForm({
 
   const { reset, getValues } = profileForm;
 
+  useEffect(() => {
+    if (account) {
+      reset({
+        username: account.username,
+        email: account.email,
+      });
+      setOriginalValues({
+        username: account.username,
+        email: account.email,
+      });
+    }
+  }, [account, reset]);
+
   const saveChanges = async (values: z.infer<typeof profileFormSchema>) => {
+    if (!account?.accountId) return;
+
     try {
-      await accountService.updateProfile(
-        "1116dd2f-2ae6-4e49-30e4-08dd8d858c1a",
-        values
-      );
-      console.log("Guardando cambios:", values);
+      await accountService.updateProfile(account?.accountId, values);
       toast.success("Cuenta actualizada exitosamente.");
       setOriginalValues(getValues());
     } catch (error: unknown) {
@@ -75,6 +91,14 @@ export function EditProfileForm({
       setOriginalValues(getValues());
       setIsEditing(true);
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Cargando datos del perfil...</p>
+      </div>
+    );
   }
 
   return (
