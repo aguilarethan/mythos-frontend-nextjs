@@ -8,6 +8,7 @@ import { LockedChapterPreview } from "@/features/chapter/locked-chapter-preview"
 import { Chapter, PurchaseStatus } from "@/services/chapter/chapter-interfaces";
 import {
   getChapterById,
+  getChaptersByNovelId,
   checkPurchaseStatus,
   purchaseChapter,
 } from "@/services/chapter/chapter-service";
@@ -25,6 +26,22 @@ export function ChapterReader({ initialChapterId }: ChapterReaderProps) {
     null
   );
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+
+  useEffect(() => {
+    async function fetchChapters() {
+      if (!chapter?.novelId) return; // Evita llamar con undefined
+
+      try {
+        const data = await getChaptersByNovelId(chapter.novelId);
+        setChapters(data);
+      } catch (err) {
+        toast("Error al obtener la lista de capítulos");
+      }
+    }
+
+    fetchChapters();
+  }, [chapter?.novelId]);
 
   const loadChapter = async (chapterId: string) => {
     setLoading(true);
@@ -85,14 +102,28 @@ export function ChapterReader({ initialChapterId }: ChapterReaderProps) {
   const handlePreviousChapter = () => {
     // Simulamos la navegación al capítulo anterior
     toast("Cargando capítulo anterior");
-    // Aquí se realizaría la navegación real al capítulo anterior
+    if (!chapter) return;
+
+    const currentIndex = chapters.findIndex((c) => c.id === chapter.id);
+    if (currentIndex > 0) {
+      const prevChapterId = chapters[currentIndex - 1].id;
+      loadChapter(prevChapterId);
+    } else {
+      toast("Este es el primer capítulo.");
+    }
   };
 
   const handleNextChapter = () => {
     // Simulamos la navegación al siguiente capítulo
-    const nextChapterId = "def456"; // ID simulado del siguiente capítulo
-    loadChapter(nextChapterId);
-    toast("Cargando siguiente capítulo");
+    if (!chapter) return;
+
+    const currentIndex = chapters.findIndex((c) => c.id === chapter.id);
+    if (currentIndex < chapters.length - 1) {
+      const nextChapterId = chapters[currentIndex + 1].id;
+      loadChapter(nextChapterId);
+    } else {
+      toast("Este es el último capítulo.");
+    }
   };
 
   if (loading) {

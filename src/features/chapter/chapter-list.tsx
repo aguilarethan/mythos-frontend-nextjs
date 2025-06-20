@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useChapterStore } from "@/store/chapter-store"; // importa tu store
 
 interface ChapterListProps {
   novelId: string;
@@ -16,6 +17,7 @@ export default function ChapterList({ novelId }: ChapterListProps) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const setSelectedId = useChapterStore((state) => state.setSelectedId); // accede a la función del store
 
   useEffect(() => {
     async function fetchChapters() {
@@ -54,7 +56,10 @@ export default function ChapterList({ novelId }: ChapterListProps) {
         <Card
           key={chapter.id}
           className="flex justify-between items-center p-4 cursor-pointer hover:bg-muted transition-colors"
-          onClick={() => router.push(`/reader/chapter/${chapter.id}`)}
+          onClick={() => {
+            setSelectedId(chapter.id); // Guardar el ID en el store
+            router.push("/chapter/reader"); // Redirigir a la página del lector
+          }}
         >
           <div>
             <h3 className="text-lg font-semibold">{chapter.title}</h3>
@@ -63,11 +68,9 @@ export default function ChapterList({ novelId }: ChapterListProps) {
               {chapter.priceMythras > 0 && "• Requiere pago"}
             </p>
           </div>
-          {chapter.priceMythras > 0 && (
-            <Button variant="outline" size="sm">
-              Comprar
-            </Button>
-          )}
+          <Button variant="outline" size="sm">
+            Leer
+          </Button>
         </Card>
       ))}
     </div>

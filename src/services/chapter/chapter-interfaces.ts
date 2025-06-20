@@ -14,6 +14,7 @@ export interface ReducedChapter {
 
 export interface Chapter {
   id: string
+  novelId: string
   title: string
   content: string
   chapterNumber: number
