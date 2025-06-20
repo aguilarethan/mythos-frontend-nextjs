@@ -10,3 +10,12 @@ export interface CreateNovelRequest {
     tags: string[];
     coverImageUrl: string;
 }
+
+export interface UpdateNovelRequest {
+  writerAccountId: string;
+  title: string;
+  description: string;
+  coverImageUrl: string;
+  genres: string[];
+  tags: string[];
+}
