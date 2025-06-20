@@ -1,129 +1,174 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAccount } from "@/hooks/use-account";
+import { ReadingPreferencesPreview } from "./reading-preferences-preview";
+import { toast } from "sonner";
 
 import {
     Form,
+    FormControl,
     FormField,
     FormItem,
     FormLabel,
-    FormControl,
-    FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
-    getPreferences,
-    updatePreferences,
-    createPreferences
-} from "@/lib/api/node/reading-preferences"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Text, Type, List, Palette } from "lucide-react";
 
-const mockAccountId = "684e8f99afae4ccd5d64f92b"
+import { readingPreferencesService } from "@/services/reading-preferences-settings/reading-preferences-settings-service";
 
 const preferencesSchema = z.object({
     fontSize: z
-        .number({ invalid_type_error: "Debe ser un número" })
-        .min(10, "Mínimo permitido: 10")
-        .max(20, "Máximo permitido: 20"),
-    fontFamily: z.enum(
-        ["Arial", "Times New Roman", "Verdana", "Georgia"],
-        { required_error: "Selecciona una fuente" }
-    ),
+        .number({ invalid_type_error: "Debe ser un número válido" })
+        .min(10, "El tamaño mínimo es 10")
+        .max(20, "El tamaño máximo es 20"),
+    fontFamily: z.enum(["Arial", "Times New Roman", "Verdana", "Georgia"], {
+        errorMap: () => ({ message: "Selecciona una fuente válida" }),
+    }),
     lineSpacing: z
-        .number({ invalid_type_error: "Debe ser un número" })
-        .min(1, "Mínimo permitido: 1")
-        .max(5, "Máximo permitido: 5"),
+        .number({ invalid_type_error: "Debe ser un número válido" })
+        .min(1, "El espaciado mínimo es 1")
+        .max(5, "El espaciado máximo es 5"),
     theme: z.enum(["Claro", "Oscuro"], {
-        required_error: "Selecciona un tema"
-    })
-})
+        errorMap: () => ({ message: "Selecciona un tema válido" }),
+    }),
+});
 
-type PreferencesFormValues = z.infer<typeof preferencesSchema>
+type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 
 export function ReadingPreferencesForm() {
+    const { account } = useAccount();
     const form = useForm<PreferencesFormValues>({
         resolver: zodResolver(preferencesSchema),
         defaultValues: {
             fontSize: undefined,
             fontFamily: undefined,
             lineSpacing: undefined,
-            theme: undefined
+            theme: undefined,
         },
-        mode: "onChange"
-    })
+        mode: "onChange",
+    });
 
-    const [hasPreferences, setHasPreferences] = useState(false)
-    const [preview, setPreview] = useState<PreferencesFormValues | null>(null)
-    const [initialValues, setInitialValues] = useState<PreferencesFormValues | null>(null)
+    const [initialValues, setInitialValues] = useState<PreferencesFormValues | null>(null);
+    const [validPreviewValues, setValidPreviewValues] = useState<PreferencesFormValues | null>(null);
+    const [mounted, setMounted] = useState(false);
+    const [showCancel, setShowCancel] = useState(false);
 
     useEffect(() => {
-        getPreferences(mockAccountId)
-            .then((data) => {
-                form.reset({
-                    fontSize: data.fontSize,
-                    fontFamily: data.fontFamily,
-                    lineSpacing: data.lineSpacing,
-                    theme: data.theme
-                })
-                setHasPreferences(true)
-                setInitialValues({
-                    fontSize: data.fontSize,
-                    fontFamily: data.fontFamily,
-                    lineSpacing: data.lineSpacing,
-                    theme: data.theme
-                })
-            })
-            .catch(() => setHasPreferences(false))
-    }, [form])
+        setMounted(true);
+    }, []);
 
-    const isChanged = initialValues
-        ? JSON.stringify(form.watch()) !== JSON.stringify(initialValues)
-        : true
+    useEffect(() => {
+        const fetchPreferences = async () => {
+            if (!account?.accountId) return;
+            try {
+                const data = await readingPreferencesService.getPreferences(account.accountId);
+                form.reset(data);
+                setInitialValues(data);
+            } catch (error: any) {
+                if (error?.status === 404) {
+                    toast.info("Aún no tienes preferencias registradas. Puedes configurarlas ahora.");
+                    setInitialValues(null);
+                } else {
+                    toast.error("Ocurrió un error al cargar tus preferencias. Intenta de nuevo.");
+                    console.error("Error al cargar preferencias:", error);
+                }
+            }
+        };
+        fetchPreferences();
+    }, [account?.accountId, form]);
+
+    const watchedValues = form.watch();
+
+    useEffect(() => {
+        if (mounted) {
+            const { fontSize, fontFamily, lineSpacing, theme } = watchedValues;
+            const result = preferencesSchema.safeParse({
+                fontSize,
+                fontFamily,
+                lineSpacing,
+                theme,
+            });
+            if (result.success) {
+                setValidPreviewValues(result.data);
+            } else {
+                setValidPreviewValues(null);
+            }
+
+            if (initialValues) {
+                setShowCancel(JSON.stringify(form.getValues()) !== JSON.stringify(initialValues));
+            } else {
+                const hasAnyValue = Object.values(form.getValues()).some(v => v !== undefined);
+                setShowCancel(hasAnyValue);
+            }
+        }
+    }, [
+        watchedValues.fontSize,
+        watchedValues.fontFamily,
+        watchedValues.lineSpacing,
+        watchedValues.theme,
+        mounted,
+        form,
+        initialValues,
+    ]);
 
     const onSubmit = async (data: PreferencesFormValues) => {
+        if (!account?.accountId) {
+            toast.error("No se encontró el ID de la cuenta");
+            return;
+        }
+
         try {
-            if (hasPreferences) {
-                await updatePreferences(mockAccountId, data)
-                alert("Preferencias actualizadas con éxito")
-                setInitialValues(data)
+            if (initialValues) {
+                await readingPreferencesService.updatePreferences(account.accountId, data);
+                toast.success("Preferencias actualizadas exitosamente");
             } else {
-                await createPreferences({ ...data, accountId: mockAccountId })
-                alert("Preferencias creadas con éxito")
-                setHasPreferences(true)
-                setInitialValues(data)
+                await readingPreferencesService.createPreferences({ ...data, accountId: account.accountId });
+                toast.success("Preferencias creadas exitosamente");
             }
-        } catch {
-            alert("Error al guardar preferencias")
+            form.reset(data);
+            setInitialValues(data);
+            setShowCancel(false);
+        } catch (error: any) {
+            toast.error(error?.message || "Error al guardar preferencias");
         }
-    }
+    };
 
-    const onPreview = async () => {
-        const isValid = await form.trigger()
-        if (!isValid) {
-            alert("Corrige los errores antes de visualizar el ejemplo")
-            setPreview(null)
-            return
+    const handleCancel = () => {
+        if (initialValues) {
+            form.reset(initialValues);
+        } else {
+            form.reset({
+                fontSize: undefined,
+                fontFamily: undefined,
+                lineSpacing: undefined,
+                theme: undefined,
+            });
         }
+        setShowCancel(false);
+    };
 
-        const values = form.getValues()
-        setPreview(values)
-    }
+    const isChanged = initialValues
+        ? JSON.stringify(form.getValues()) !== JSON.stringify(initialValues)
+        : true;
 
     return (
         <Form {...form}>
-            <div className="space-y-4">
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold">Preferencias de lectura</h2>
-                    <div className="border-b border-gray-300 mt-1"></div>
-                </div>
-
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
-                    noValidate>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="fontSize"
@@ -131,54 +176,56 @@ export function ReadingPreferencesForm() {
                             <FormItem>
                                 <FormLabel>Tamaño de fuente</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="Ingresa el tamaño de fuente (10-20)"
-                                        min={10}
-                                        max={20}
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        onChange={(e) =>
-                                            field.onChange(
+                                    <div className="relative">
+                                        <Text className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                                        <Input
+                                            type="number"
+                                            placeholder="10-20"
+                                            min="10"
+                                            max="20"
+                                            value={field.value ?? ""}
+                                            onChange={(e) => field.onChange(
                                                 e.target.value === "" ? undefined : Number(e.target.value)
-                                            )
-                                        }
-                                    />
+                                            )}
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                                            }}
+                                            className="pl-8"
+                                        />
+                                    </div>
                                 </FormControl>
-                                <FormMessage />
+                                <div className="min-h-[1.25rem]">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="fontFamily"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Familia de fuente</FormLabel>
-                                <FormControl>
-                                    <select
-                                        {...field}
-                                        className="border rounded p-2"
-                                        value={field.value ?? ""}
-                                        onChange={(e) =>
-                                            field.onChange(
-                                                e.target.value === "" ? undefined : e.target.value
-                                            )
-                                        }
-                                    >
-                                        <option value="">Selecciona una fuente...</option>
-                                        <option value="Arial">Arial</option>
-                                        <option value="Times New Roman">Times New Roman</option>
-                                        <option value="Verdana">Verdana</option>
-                                        <option value="Georgia">Georgia</option>
-                                    </select>
-                                </FormControl>
-                                <FormMessage />
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <FormControl>
+                                        <SelectTrigger className="w-full">
+                                            <Type className="mr-2 h-4 w-4 text-muted-foreground" />
+                                            <SelectValue placeholder="Selecciona una fuente..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Arial">Arial</SelectItem>
+                                        <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                                        <SelectItem value="Verdana">Verdana</SelectItem>
+                                        <SelectItem value="Georgia">Georgia</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <div className="min-h-[1.25rem]">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="lineSpacing"
@@ -186,76 +233,80 @@ export function ReadingPreferencesForm() {
                             <FormItem>
                                 <FormLabel>Espaciado de línea</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        step="0.1"
-                                        placeholder="Ingresa el espaciado (1-5)"
-                                        min={1}
-                                        max={5}
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        onChange={(e) =>
-                                            field.onChange(
+                                    <div className="relative">
+                                        <List className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                                        <Input
+                                            type="number"
+                                            placeholder="1-5"
+                                            step="0.5"
+                                            min="1"
+                                            max="5"
+                                            value={field.value ?? ""}
+                                            onChange={(e) => field.onChange(
                                                 e.target.value === "" ? undefined : Number(e.target.value)
-                                            )
-                                        }
-                                    />
+                                            )}
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                                            }}
+                                            className="pl-8"
+                                        />
+                                    </div>
                                 </FormControl>
-                                <FormMessage />
+                                <div className="min-h-[1.25rem]">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="theme"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tema</FormLabel>
-                                <FormControl>
-                                    <select
-                                        {...field}
-                                        className="border rounded p-2"
-                                        value={field.value ?? ""}
-                                        onChange={(e) =>
-                                            field.onChange(
-                                                e.target.value === "" ? undefined : e.target.value
-                                            )
-                                        }>
-                                        <option value="">Selecciona un tema...</option>
-                                        <option value="Claro">Claro</option>
-                                        <option value="Oscuro">Oscuro</option>
-                                    </select>
-                                </FormControl>
-                                <FormMessage />
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <FormControl>
+                                        <SelectTrigger className="w-full">
+                                            <Palette className="mr-2 h-4 w-4 text-muted-foreground" />
+                                            <SelectValue placeholder="Selecciona un tema..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Claro">Claro</SelectItem>
+                                        <SelectItem value="Oscuro">Oscuro</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <div className="min-h-[1.25rem]">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
-
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={!isChanged} className="cursor-pointer">
-                            Guardar preferencias
+                </div>
+                <Separator />
+                <div className="flex gap-2">
+                    <Button type="submit" disabled={!isChanged}>
+                        Guardar preferencias
+                    </Button>
+                    {showCancel && initialValues && (
+                        <Button type="button" variant="outline" onClick={handleCancel}>
+                            Cancelar
                         </Button>
-                        <Button type="button" variant="outline" onClick={onPreview}>
-                            Visualizar ejemplo
-                        </Button>
-                    </div>
-                </form>
-
-                {preview && (
-                    <div
-                        className="mt-4 p-4 border rounded"
-                        style={{
-                            fontSize: `${preview.fontSize}px`,
-                            fontFamily: preview.fontFamily,
-                            lineHeight: preview.lineSpacing,
-                            backgroundColor: preview.theme === "Oscuro" ? "#1a202c" : "#f7fafc",
-                            color: preview.theme === "Oscuro" ? "#f7fafc" : "#1a202c"
-                        }}>
-                        “Las personas grandes aman las cifras. Cuando les habláis de un nuevo amigo, no os interrogan jamás sobre lo esencial. Jamás os dicen: ‘¿Cómo es el timbre de su voz? ¿Cuáles son los juegos que prefiere? ¿Colecciona mariposas?’. En cambio, os preguntan: ‘¿Qué edad tiene? ¿Cuántos hermanos tiene? ¿Cuánto pesa? ¿Cuánto gana su padre?’. Sólo entonces creen conocerle”.
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+                <div>
+                    <h3 className="text-lg font-medium">Visualización de ejemplo</h3>
+                    {mounted && (
+                        <ReadingPreferencesPreview
+                            fontSize={validPreviewValues?.fontSize}
+                            fontFamily={validPreviewValues?.fontFamily}
+                            lineSpacing={validPreviewValues?.lineSpacing}
+                            theme={validPreviewValues?.theme}
+                            hasError={!validPreviewValues}
+                        />
+                    )}
+                </div>
+            </form>
         </Form>
-    )
+    );
 }
