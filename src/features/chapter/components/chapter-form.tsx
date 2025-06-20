@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import {  useNovelDetailsStore } from "@/store/novel-details-store"
+import { useNovelDetailsStore } from "@/store/novel-details-store"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { createChapter } from "@/services/chapter/chapter-service"
+import { Textarea } from "@/components/ui/textarea"
 
 const chapterFormSchema = z.object({
     title: z.string().min(1, "El título es requerido"),
@@ -41,8 +42,13 @@ export function ChapterForm({ className, ...props }: React.ComponentProps<"form"
     })
 
     async function onSubmit(values: z.infer<typeof chapterFormSchema>) {
+
+        if (!id) {
+            toast.error("No se encontró el ID de la novela.");
+            return;
+        }
         try {
-            await createChapter({...values, novelId: id});
+            await createChapter({ ...values, novelId: id });
             toast.success("Capítulo creado exitosamente");
         } catch (error: any) {
             toast.error(error.message || "Error al crear el capítulo");
@@ -50,47 +56,54 @@ export function ChapterForm({ className, ...props }: React.ComponentProps<"form"
     }
 
     return (
-        <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onSubmit)} className={cn("flex flex-col gap-6", className)} {...props}>
+        <Form {...chapterForm}>
+            <form onSubmit={chapterForm.handleSubmit(onSubmit)} className={cn("flex flex-col gap-6", className)} {...props}>
 
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <h1 className="text-2xl font-bold">Inicia sesión con tu cuenta</h1>
-                    <p className="text-muted-foreground text-sm text-balance">
-                        Ingresa tu correo electrónico y contraseña
-                    </p>
+
+                <div className="flex gap-4">
+                    <div className="w-4/5">
+                        <FormField
+                            control={chapterForm.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Título</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Escribe el título de tu capítulo..." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="w-1/5">
+                        <FormField
+                            control={chapterForm.control}
+                            name="priceMythras"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Mythras</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
-
                 <FormField
-                    control={loginForm.control}
-                    name="username"
+                    control={chapterForm.control}
+                    name="content"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Nombre de usuario</FormLabel>
+                            <FormLabel>Contenido</FormLabel>
                             <FormControl>
-                                <Input placeholder="mythos" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
+                                <Textarea placeholder="Escribe el contenido de tu capítulo aquí..." {...field} className="h-150">
 
-                <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Contraseña</FormLabel>
-                            <FormControl>
-                                <div className="relative">
-                                    <Input type={showPassword ? "text" : "password"} {...field} />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword((prev) => !prev)}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                                    >
-                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                    </button>
-                                </div>
+                                </Textarea>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -98,16 +111,8 @@ export function ChapterForm({ className, ...props }: React.ComponentProps<"form"
                 />
 
                 <Button type="submit" className="w-full">
-                    Iniciar sesión
+                    Publicar capítulo
                 </Button>
-
-                <div className="text-center text-sm">
-                    ¿Aún no tienes una cuenta?{" "}
-                    <a href="/register" className="underline underline-offset-4">
-                        Crea una
-                    </a>
-                </div>
-
 
             </form>
         </Form>
