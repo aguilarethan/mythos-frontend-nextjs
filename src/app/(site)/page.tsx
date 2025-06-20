@@ -6,7 +6,7 @@ export default function HomePage() {
         <div className="max-w-5xl items=center mx-auto py-4">
             
             <div>
-                <h2 className="text-xl font-semibold mb-4">Los mejores de la semana</h2>
+                <h2 className="text-xl font-semibold mb-4">Los más nuevo del momento</h2>
                 <NovelsCarousel />
             </div>
 

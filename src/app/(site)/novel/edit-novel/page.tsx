@@ -30,8 +30,7 @@ export default function EditNovelPage() {
     isPublic,
     coverImageUrl,
     status,
-    createdAt: createdAt?.toISOString(),
-    updatedAt: updatedAt?.toISOString(),
+    
   }
 
 

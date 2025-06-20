@@ -39,6 +39,10 @@ export default function NovelInformation({
         router.push(`/novel/edit-novel`);
     }
 
+    const handleCreateChapterClick = () => {
+        router.push(`/novel/create-chapter`);
+    }
+
     if (isLoading) {
         return <NovelInformationSkeleton />;
     }
@@ -95,7 +99,7 @@ export default function NovelInformation({
 
                         <div className="flex justify-between items-center">
                             {isOwner ? (
-                                <Button className="cursor-pointer">
+                                <Button onClick={handleCreateChapterClick} className="cursor-pointer">
                                     Agregar capítulo
                                 </Button>
                             ) : (
