@@ -32,8 +32,8 @@ export function Navbar() {
     }
 
     return (
-        <header className="w-full border-b bg-white dark:bg-black">
-            <div className="max-w-5xl min-h-[65px] mx-auto px-4 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
+        <header className="w-full">
+            <div className="max-w-5xl min-h-[65px] mx-auto px-0 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
 
                 <div className="flex items-center gap-6 flex-grow md:flex-grow-0">
                     <Link href="/" className="flex items-center gap-2">
