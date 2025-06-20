@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { useAccount } from '@/hooks/use-account';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
+import { NovelReportForm } from './novel-report-form';
+
 
 interface NovelInformationProps extends NovelData {
     isLoading?: boolean;
@@ -110,9 +112,7 @@ export default function NovelInformation({
 
                             <div className="flex gap-2">
                                 {!isOwner && (
-                                    <Button variant="outline" size="icon" className="cursor-pointer">
-                                        <Flag className="w-4 h-4" />
-                                    </Button>
+                                    <NovelReportForm novelId={id!} />
                                 )}
                                 {isOwner && (
                                     <Button onClick={handleEditNovelClick} variant="outline" size="icon" className="cursor-pointer">
@@ -231,7 +231,7 @@ function NovelInformationSkeleton() {
                         {/* Skeleton para los botones */}
                         <div className="flex justify-between items-center">
                             <Skeleton className="h-10 w-32" />
-                            
+
                             <div className="flex gap-2">
                                 <Skeleton className="h-10 w-10" />
                             </div>
