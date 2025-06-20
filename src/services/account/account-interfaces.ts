@@ -14,3 +14,15 @@ export interface UpdateProfileRequest {
     username: string; 
     email: string;
 }
+
+export interface WriterProfileRequest {
+  name: string;
+  lastName: string;
+  birthDate: string; // ISO format string
+  country: string;
+  biography: string;
+}
+
+export interface BecomeWriterResponse {
+  message: string;
+}

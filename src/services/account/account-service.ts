@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { dotnetApi } from "../../lib/api/dotnet-api";
 
-import { Account, ChangePasswordRequest, UpdateProfileRequest } from "./account-interfaces";
+import { Account, ChangePasswordRequest, UpdateProfileRequest, WriterProfileRequest, BecomeWriterResponse } from "./account-interfaces";
 
 export async function getAccount() {
     try {
@@ -47,7 +47,25 @@ async function changePassword(id: string, data: ChangePasswordRequest){
     }
 }
 
+async function becomeWriter(data: WriterProfileRequest): Promise<BecomeWriterResponse> {
+  try {
+    const response = await dotnetApi.post("/account/become-writer", data);
+    return response.data;
+  } catch (error: unknown) {
+    let message = "Ocurrió un error al convertirte en escritor.";
+
+    if (error instanceof AxiosError) {
+      message = error.response?.data?.message || message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+
+    throw new Error(message);
+  }
+}
+
 export const accountService = {
     changePassword,
     updateProfile,
+    becomeWriter,
 }

@@ -41,17 +41,6 @@ export default function SubscriptionPage() {
   const handlePaymentSubmit = async (paymentData: PaymentData) => {
     setIsProcessing(true);
 
-    // TODO: Integrar con el backend real
-    // const response = await fetch('/api/subscription/create', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     planId: selectedPlan?.id,
-    //     paymentData,
-    //     userId: user.id // Obtener del contexto de autenticación
-    //   })
-    // })
-
     if (!selectedPlan) return;
 
     try {
