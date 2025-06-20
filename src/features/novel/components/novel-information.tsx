@@ -11,6 +11,7 @@ import { useAccount } from "@/hooks/use-account";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NovelReportForm } from "./novel-report-form";
+import ChapterList from "@/features/chapter/chapter-list";
 
 interface NovelInformationProps extends NovelData {
   isLoading?: boolean;
