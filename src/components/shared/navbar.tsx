@@ -17,8 +17,10 @@ import { Search, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { logout } from "@/services/auth/auth-service";
 
+
 export function Navbar() {
   const { isLoggedIn, isLoading, setIsLoggedIn } = useAuth();
+  
 
   if (isLoading) return null;
 
@@ -26,6 +28,7 @@ export function Navbar() {
     try {
       await logout();
       setIsLoggedIn(false);
+      window.location.reload();
     } catch (error: any) {
       console.error("Error al cerrar sesión:", error);
     }
