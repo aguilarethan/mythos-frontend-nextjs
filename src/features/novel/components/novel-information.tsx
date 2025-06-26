@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NovelReportForm } from "./novel-report-form";
 import ChapterList from "@/features/chapter/chapter-list";
+import ReviewsBox from "../../reviews/components/reviews-box";
 
 interface NovelInformationProps extends NovelData {
   isLoading?: boolean;
@@ -141,7 +142,7 @@ export default function NovelInformation({
         </TabsList>
 
         <TabsContent value="Capítulos" className="flex-1 space-y-5">
-          <ChapterList novelId={"6854ff5d0b9a2bfe04a3895b"} />
+          <ChapterList novelId={id!} />
         </TabsContent>
 
         <TabsContent value="Información" className="flex-1 space-y-5">
@@ -162,14 +163,11 @@ export default function NovelInformation({
           </div>
 
           <div>
-            <h2 className="text-2xl font-semibold mb-3">Reseñas</h2>
-            <p>{description}</p>
+            
+            <ReviewsBox />
           </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold mb-3">Novelas similares</h2>
-            <p>{description}</p>
-          </div>
+          
         </TabsContent>
       </Tabs>
     </div>
