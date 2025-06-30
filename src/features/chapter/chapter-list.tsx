@@ -58,7 +58,7 @@ export default function ChapterList({ novelId }: ChapterListProps) {
           className="flex justify-between items-center p-4 cursor-pointer hover:bg-muted transition-colors"
           onClick={() => {
             setSelectedId(chapter.id); // Guardar el ID en el store
-            router.push("/chapter/reader"); // Redirigir a la página del lector
+            router.push("/novel/chapter"); // Redirigir a la página del lector
           }}
         >
           <div>

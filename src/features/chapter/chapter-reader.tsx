@@ -13,6 +13,7 @@ import {
   purchaseChapter,
 } from "@/services/chapter/chapter-service";
 import { toast } from "sonner";
+import { CommentsBox } from "../comment/comments-box";
 
 interface ChapterReaderProps {
   initialChapterId: string;
@@ -183,48 +184,46 @@ export function ChapterReader({ initialChapterId }: ChapterReaderProps) {
     (chapter?.priceMythras > 0 && purchaseStatus?.isPurchased);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <Card className="shadow-sm">
-          <CardContent className="p-8">
-            {/* Header del capítulo */}
-            <header className="text-center mb-8 pb-6 border-b">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                {chapter.title}
-              </h1>
-              <p className="text-muted-foreground">
-                {chapter.bookTitle} • Capítulo {chapter.chapterNumber}
-              </p>
-            </header>
+    <Card className="mx-auto border-none shadow-none bg-transparent max-w-5xl">
+        <CardContent>
+          {/* Header del capítulo */}
+          <header className="text-start mb-8 pb-6 border-b">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              {chapter.title}
+            </h1>
+            <p className="text-muted-foreground">
+              {chapter.bookTitle} Capítulo {chapter.chapterNumber}
+            </p>
+          </header>
 
-            {/* Contenido del capítulo */}
-            {shouldShowFullContent ? (
-              <article className="prose prose-lg max-w-none">
-                <div className="text-gray-800 leading-relaxed space-y-6">
-                  {chapter.content.split("\n\n").map((paragraph, index) => (
-                    <p key={index} className="text-base md:text-lg leading-8">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </article>
-            ) : (
-              <LockedChapterPreview
-                chapter={chapter}
-                onPurchase={handlePurchaseChapter}
-                isPurchasing={isPurchasing}
-              />
-            )}
-
-            {/* Navegación entre capítulos */}
-            <ChapterNavigation
-              currentChapter={chapter.chapterNumber}
-              onPreviousChapter={handlePreviousChapter}
-              onNextChapter={handleNextChapter}
+          {/* Contenido del capítulo */}
+          {shouldShowFullContent ? (
+            <article className="prose prose-lg max-w-none">
+              <div className="leading-relaxed space-y-6">
+                {chapter.content.split("\n\n").map((paragraph, index) => (
+                  <p key={index} className="text-base md:text-lg leading-8">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </article>
+          ) : (
+            <LockedChapterPreview
+              chapter={chapter}
+              onPurchase={handlePurchaseChapter}
+              isPurchasing={isPurchasing}
             />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          )}
+
+          {/* Navegación entre capítulos */}
+          <ChapterNavigation
+            currentChapter={chapter.chapterNumber}
+            onPreviousChapter={handlePreviousChapter}
+            onNextChapter={handleNextChapter}
+          />
+
+          <CommentsBox />
+        </CardContent>
+      </Card>
   );
 }

@@ -47,6 +47,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
       toast.success("Cuenta creada exitosamente. Por favor, inicia sesión.");
       router.push("/login");  
     } catch (error: any) {
+      console.error("Error al registrar usuario:", error);
       toast.error(error.message || "Error al registrar usuario")
     }
   }

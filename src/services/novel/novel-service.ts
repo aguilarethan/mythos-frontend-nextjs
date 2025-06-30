@@ -16,6 +16,7 @@ export async function getLastThreeNovelsPreview() {
 export async function getNovelById(id: string) {
   try {
     const response = await nodeApi.get(`/novels/${id}`);
+    console.log("Novel data:", response.data);
     return response.data;
   } catch (error: any) {
     const message = error.response?.data?.message || "Error al obtener la novela";

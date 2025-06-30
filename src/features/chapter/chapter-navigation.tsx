@@ -37,7 +37,7 @@ export function ChapterNavigation({
       <Button
         variant="outline"
         onClick={handlePrevious}
-        className="flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-50"
+        className="flex items-center gap-2"
       >
         <ChevronLeft className="h-4 w-4" />
         Capítulo anterior
@@ -50,7 +50,7 @@ export function ChapterNavigation({
       <Button
         variant="outline"
         onClick={handleNext}
-        className="flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-50"
+        className="flex items-center gap-2 "
       >
         Siguiente capítulo
         <ChevronRight className="h-4 w-4" />
