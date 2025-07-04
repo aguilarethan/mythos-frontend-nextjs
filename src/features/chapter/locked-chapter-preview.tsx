@@ -26,14 +26,12 @@ export function LockedChapterPreview({
       <div className="relative">
         <div className="prose prose-lg max-w-none">
           <div className="leading-relaxed">
-            <p className="text-base md:text-lg leading-8">
-              {previewContent}
-            </p>
+            <p className="text-base md:text-lg leading-8">{previewContent}</p>
           </div>
         </div>
 
         {/* Overlay de desvanecimiento */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none" />
       </div>
 
       <Separator />
