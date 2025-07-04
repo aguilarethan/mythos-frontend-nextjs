@@ -16,6 +16,7 @@ import {
 const routeNames: Record<string, string> = {
     "/": "Inicio",
     "/become-writer": "Conviertete en autor",
+    "/search": "Búsqueda",
     "/chapter/reader": "Perfil",
     "/novel": "Novela",
     "/novel/create-chapter": "Crear capítulo",

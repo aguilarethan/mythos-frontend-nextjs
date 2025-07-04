@@ -17,13 +17,19 @@ import { Search, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useAccount } from "@/hooks/use-account";
 import { logout } from "@/services/auth/auth-service";
-
+import { useRouter } from "next/navigation";
+import { useSearchStore } from "@/store/search-store";
+import { FormEvent, useState } from "react";
 
 export function Navbar() {
+  // ✅ Todos los hooks al principio
   const { isLoggedIn, isLoading, setIsLoggedIn } = useAuth();
   const { account } = useAccount();
+  const router = useRouter();
+  const { setSearch } = useSearchStore();
+  const [searchText, setSearchText] = useState("");
 
-
+  // ✅ Return condicional después de todos los hooks
   if (isLoading) return null;
 
   async function handleLogout() {
@@ -34,6 +40,14 @@ export function Navbar() {
     } catch (error: any) {
       console.error("Error al cerrar sesión:", error);
     }
+  }
+
+  function handleSearchSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (searchText.trim() === "") return;
+    setSearch(searchText.trim(), "title");
+    router.push("/search");
+    setSearchText("");
   }
 
   return (
@@ -63,19 +77,20 @@ export function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex-1 mx-6">
+        <form onSubmit={handleSearchSubmit} className="flex-1 mx-6">
           <div className="flex items-center w-full">
             <Input
               type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
               placeholder="Buscar..."
               className="rounded-r-none border-r-0"
             />
-            <Button type="submit" size="icon" className="rounded-l-none">
+            <Button type="submit" size="icon" className="rounded-l-none cursor-pointer">
               <Search className="h-4 w-4" />
             </Button>
           </div>
-        </div>
-
+        </form>
 
         <div className="flex items-center gap-4">
           <ModeToggle />
@@ -87,7 +102,7 @@ export function Navbar() {
             </Button>
           )}
           {isLoggedIn ? (
-            <Button onClick={handleLogout}>Cerrar sesión</Button>
+            <Button onClick={handleLogout} className="cursor-pointer">Cerrar sesión</Button>
           ) : (
             <Button asChild>
               <Link href="/login">Iniciar sesión</Link>

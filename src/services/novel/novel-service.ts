@@ -36,6 +36,28 @@ export async function getNovelById(id: string) {
   }
 }
 
+export async function getNovelsByGenre(genre: string) {
+  try {
+    const response = await nodeApi.get(`/novels/search/genre/${genre}`);
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error al obtener las novelas por género";
+    console.error("Error loading novels by genre:", error);
+    throw new Error(message);
+  }
+}
+
+export async function getNovelsByTitleMatch(title: string) {
+  try {
+    const response = await nodeApi.get(`/novels/search/title/${title}`);
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error al obtener las novelas por título";
+    console.error("Error loading novels by title match:", error);
+    throw new Error(message);
+  }
+}
+
 export async function uploadCoverImage(data: UploadCoverImageRequest) {
   try {
     const formData = new FormData();

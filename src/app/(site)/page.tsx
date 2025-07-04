@@ -1,14 +1,25 @@
+"use client";
+
 import { EightMostViewedRecommendations } from "@/features/novel/components/eight-most-viewed-recommendations";
-import {NovelRecommendationCard} from "@/features/novel/components/novel-recommendation-card";
 import { NovelsCarousel } from "@/features/novel/components/novels-carousel";
+import { useSearchStore } from "@/store/search-store";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/shared/footer";
 
 export default function HomePage() {
     const AVAILABLE_GENRES = ["Acción", "Aventura", "Romance", "Terror", "Drama", "Fantasía", "Fantasía oscura", "Ciencia ficción", "Comedia", "Misterio", "Misterio sobrenatural", "Cultivo", "Superheroes"]
+    const { setSearch } = useSearchStore();
+    const router = useRouter();
+
+    function handleGenreClick(genre: string) {
+        setSearch(genre, "genre");
+        router.push("/search");
+    }
+
     return (
         <div className="max-w-5xl items=center mx-auto py-4">
-            
+
             <div>
                 <h2 className="text-xl font-semibold mb-4">Los más nuevo del momento</h2>
                 <NovelsCarousel />
@@ -27,6 +38,7 @@ export default function HomePage() {
                             key={genre}
                             variant="outline"
                             className="text-sm px-4 py-2 cursor-pointer"
+                            onClick={() => handleGenreClick(genre)}
                         >
                             {genre}
                         </Button>
@@ -34,9 +46,9 @@ export default function HomePage() {
                 </div>
             </div>
 
-            
-           
-            
+
+
+
         </div>
     );
 }
