@@ -3,7 +3,7 @@ export interface Account {
     username: string;
     email: string;
     role: string;
-    password: string;
+    password?: string;
 }
 
 export interface ChangePasswordRequest {

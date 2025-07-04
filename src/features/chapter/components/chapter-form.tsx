@@ -50,6 +50,7 @@ export function ChapterForm({ className, ...props }: React.ComponentProps<"form"
         try {
             await createChapter({ ...values, novelId: id });
             toast.success("Capítulo creado exitosamente");
+            router.push(`/novel`);
         } catch (error: any) {
             toast.error(error.message || "Error al crear el capítulo");
         }
@@ -110,7 +111,7 @@ export function ChapterForm({ className, ...props }: React.ComponentProps<"form"
                     )}
                 />
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full cursor-pointer">
                     Publicar capítulo
                 </Button>
 

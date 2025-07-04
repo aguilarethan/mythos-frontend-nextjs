@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 export interface NovelData {
     id?: string;
     writerAccountId: string;
+    writerName?: string; 
     title: string;
     description: string;
     genres: string[];

@@ -285,11 +285,11 @@ export function ReadingPreferencesForm() {
                 </div>
                 <Separator />
                 <div className="flex gap-2">
-                    <Button type="submit" disabled={!isChanged}>
+                    <Button type="submit" disabled={!isChanged} className="cursor-pointer">
                         Guardar preferencias
                     </Button>
                     {showCancel && initialValues && (
-                        <Button type="button" variant="outline" onClick={handleCancel}>
+                        <Button type="button" variant="outline" onClick={handleCancel} className="cursor-pointer">
                             Cancelar
                         </Button>
                     )}

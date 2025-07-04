@@ -30,6 +30,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ account, novelId, onReviewSubmi
             const reviewData = {
                 novelId,
                 accountId: account.accountId,
+                username: account.username,
                 rating,
                 comment,
             };

@@ -14,6 +14,9 @@ import {
 } from "@/services/chapter/chapter-service";
 import { toast } from "sonner";
 import { CommentsBox } from "../comment/comments-box";
+import { Download } from "lucide-react";
+import { generateChapterPDF } from "@/services/chapter/chapter-service";
+import { Button } from "@/components/ui/button";
 
 interface ChapterReaderProps {
   initialChapterId: string;
@@ -65,6 +68,21 @@ export function ChapterReader({ initialChapterId }: ChapterReaderProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDownloadPDF = () => {
+    if (!chapter) {
+      toast("No se puede generar el PDF porque el capítulo no está cargado.");
+      return;
+    }
+
+    const chapterData = {
+      chapterNumber: chapter.chapterNumber,
+      title: chapter.title,
+      content: chapter.content
+    };
+
+    generateChapterPDF(chapterData);
   };
 
   const handlePurchaseChapter = async () => {
@@ -185,45 +203,49 @@ export function ChapterReader({ initialChapterId }: ChapterReaderProps) {
 
   return (
     <Card className="mx-auto border-none shadow-none bg-transparent max-w-5xl">
-        <CardContent>
-          {/* Header del capítulo */}
-          <header className="text-start mb-8 pb-6 border-b">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              {chapter.title}
-            </h1>
-            <p className="text-muted-foreground">
-              {chapter.bookTitle} Capítulo {chapter.chapterNumber}
-            </p>
-          </header>
+      <CardContent>
+        {/* Header del capítulo */}
+        <header className="text-start mb-8 pb-6 border-b">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            {chapter.title}
+          </h1>
+          <p className="text-muted-foreground">
+            {chapter.bookTitle} Capítulo {chapter.chapterNumber}
+          </p>
+        </header>
 
-          {/* Contenido del capítulo */}
-          {shouldShowFullContent ? (
-            <article className="prose prose-lg max-w-none">
-              <div className="leading-relaxed space-y-6">
-                {chapter.content.split("\n\n").map((paragraph, index) => (
-                  <p key={index} className="text-base md:text-lg leading-8">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </article>
-          ) : (
-            <LockedChapterPreview
-              chapter={chapter}
-              onPurchase={handlePurchaseChapter}
-              isPurchasing={isPurchasing}
-            />
-          )}
-
-          {/* Navegación entre capítulos */}
-          <ChapterNavigation
-            currentChapter={chapter.chapterNumber}
-            onPreviousChapter={handlePreviousChapter}
-            onNextChapter={handleNextChapter}
+        {/* Contenido del capítulo */}
+        {shouldShowFullContent ? (
+          <article className="prose prose-lg max-w-none">
+            <div className="leading-relaxed space-y-6">
+              {chapter.content.split("\n\n").map((paragraph, index) => (
+                <p key={index} className="text-base md:text-lg leading-8">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </article>
+        ) : (
+          <LockedChapterPreview
+            chapter={chapter}
+            onPurchase={handlePurchaseChapter}
+            isPurchasing={isPurchasing}
           />
+        )}
 
-          <CommentsBox />
-        </CardContent>
-      </Card>
+        <Button onClick={handleDownloadPDF} variant="secondary" size="icon" className="size-8 cursor-pointer mt-3">
+          <Download />
+        </Button>
+
+        {/* Navegación entre capítulos */}
+        <ChapterNavigation
+          currentChapter={chapter.chapterNumber}
+          onPreviousChapter={handlePreviousChapter}
+          onNextChapter={handleNextChapter}
+        />
+
+        <CommentsBox />
+      </CardContent>
+    </Card>
   );
 }

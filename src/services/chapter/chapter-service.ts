@@ -1,7 +1,7 @@
 import { nodeApi } from "@/lib/api/node-api";
 import { dotnetApi } from "@/lib/api/dotnet-api"
 
-import { Chapter, CreateChapterRequest, PurchaseResult, PurchaseStatus } from "./chapter-interfaces";
+import { Chapter, CreateChapterRequest, PurchaseResult, PurchaseStatus, GeneratePDFRequest } from "./chapter-interfaces";
 
 export async function createChapter(data: CreateChapterRequest) {
   try {
@@ -95,5 +95,35 @@ export async function purchaseChapter(chapterId: string, price: number): Promise
       success: false,
       message,
     };
+  }
+}
+
+export async function generateChapterPDF(data: GeneratePDFRequest) {
+  try {
+    const response = await nodeApi.post("/chapters/generate-pdf", data, {
+      responseType: 'blob', 
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+    
+    const url = window.URL.createObjectURL(pdfBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `capitulo-${data.chapterNumber}.pdf`;
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    return true; // Indica éxito
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error al generar el PDF";
+    throw new Error(message);
   }
 }

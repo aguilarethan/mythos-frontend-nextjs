@@ -15,12 +15,14 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
 import { Search, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useAccount } from "@/hooks/use-account";
 import { logout } from "@/services/auth/auth-service";
 
 
 export function Navbar() {
   const { isLoggedIn, isLoading, setIsLoggedIn } = useAuth();
-  
+  const { account } = useAccount();
+
 
   if (isLoading) return null;
 
@@ -42,27 +44,27 @@ export function Navbar() {
             <div className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-md">
               <img src="/mythos-logo.png" alt="Logo" className="size-9" />
             </div>
-            <span className="font-bold text-sm">Mythos</span>
+            <span className="font-medium text-sm">Mythos</span>
           </Link>
         </div>
 
         <NavigationMenu viewport={false}>
           <NavigationMenuList>
-            
-
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={navigationMenuTriggerStyle()}
-              >
-                <Link href="/become-writer">Conviertete en autor</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {account?.role !== "writer" && (
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link href="/become-writer">Conviértete en autor</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex-1 mx-6 max-w-lg">
-          <div className="flex items-center w-full max-w-sm">
+        <div className="flex-1 mx-6">
+          <div className="flex items-center w-full">
             <Input
               type="text"
               placeholder="Buscar..."
@@ -73,6 +75,7 @@ export function Navbar() {
             </Button>
           </div>
         </div>
+
 
         <div className="flex items-center gap-4">
           <ModeToggle />

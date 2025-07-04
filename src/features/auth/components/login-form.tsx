@@ -105,7 +105,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
           )}
         />
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full cursor-pointer">
           Iniciar sesión
         </Button>
 

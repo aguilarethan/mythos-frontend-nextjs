@@ -22,6 +22,7 @@ interface Novel {
     description: string;
     coverImageUrl: string;
     writerAccountId: string;
+    writerName?: string;
 }
 
 export function NovelsCarousel() {
@@ -50,7 +51,6 @@ export function NovelsCarousel() {
                 toast.error("Error al cargar novelas", {
                     description: errorMessage,
                 });
-                console.error("Error loading novels:", err);
             } finally {
                 setLoading(false);
             }
@@ -143,12 +143,12 @@ export function NovelsCarousel() {
 
                                         <div className="flex items-center mb-6 flex-shrink-0">
                                             <Avatar className="mr-2 h-8 w-8">
-                                                <AvatarFallback className="text-xs">
-                                                    {novel.writerAccountId?.charAt(0)?.toUpperCase() || "U"}
+                                                <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+                                                    {novel.writerName?.charAt(0)?.toUpperCase() || "U"}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <span className="font-normal truncate">
-                                                {novel.writerAccountId}
+                                                {novel.writerName}
                                             </span>
                                         </div>
 

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useNovelStore } from "@/store/novel-store";
 
 import { createNovel, updateNovel, uploadCoverImage } from "@/services/novel/novel-service"
 import { useAccount } from "@/hooks/use-account"
@@ -71,6 +72,8 @@ export function NovelForm({ className, novelToEdit, ...props }: NovelFormProps) 
   const [preview, setPreview] = useState<string | null>(null)
   const { account } = useAccount()
   const router = useRouter()
+  const { setSelectedId } = useNovelStore.getState();
+
 
   const form = useForm<z.infer<typeof novelFormSchema>>({
     resolver: zodResolver(novelFormSchema),
@@ -108,11 +111,14 @@ export function NovelForm({ className, novelToEdit, ...props }: NovelFormProps) 
       let coverImageUrl = novelToEdit?.coverImageUrl || ""
 
       if (values.coverImage) {
+        console.log("Subiendo imagen...");
         coverImageUrl = await uploadCoverImage({ coverImage: values.coverImage })
+        console.log("Imagen subida exitosamente:", coverImageUrl);
       }
 
       const payload = {
         writerAccountId: account.accountId,
+        writerName: account.username,
         title: values.title,
         description: values.description,
         coverImageUrl,
@@ -124,7 +130,8 @@ export function NovelForm({ className, novelToEdit, ...props }: NovelFormProps) 
         await updateNovel(novelToEdit.id!, payload)
         toast.success("Novela actualizada")
       } else {
-        await createNovel(payload)
+        const createdNovel = await createNovel(payload)
+        setSelectedId(createdNovel.id);
         toast.success("Novela creada")
       }
 
@@ -259,7 +266,7 @@ export function NovelForm({ className, novelToEdit, ...props }: NovelFormProps) 
               )}
             />
 
-            <Button type="submit" className="mt-4 self-start">
+            <Button type="submit" className="mt-4 self-start cursor-pointer">
               {novelToEdit ? "Actualizar novela" : "Publicar novela"}
               <Send />
             </Button>
@@ -275,7 +282,7 @@ export function NovelForm({ className, novelToEdit, ...props }: NovelFormProps) 
             <FormItem>
               <FormLabel>Descripción</FormLabel>
               <FormControl>
-                <Textarea placeholder="Descripción de la novela" {...field} />
+                <Textarea className="h-[320px]" placeholder="Descripción de la novela" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

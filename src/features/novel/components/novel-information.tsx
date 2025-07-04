@@ -8,11 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Eye, FileText, Star, Flag, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/hooks/use-account";
+import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NovelReportForm } from "./novel-report-form";
 import ChapterList from "@/features/chapter/chapter-list";
 import ReviewsBox from "../../reviews/components/reviews-box";
+import { useState } from "react";
 
 interface NovelInformationProps extends NovelData {
   isLoading?: boolean;
@@ -21,6 +23,7 @@ interface NovelInformationProps extends NovelData {
 export default function NovelInformation({
   id,
   writerAccountId,
+  writerName,
   title,
   description,
   genres,
@@ -35,6 +38,8 @@ export default function NovelInformation({
 }: NovelInformationProps) {
   const router = useRouter();
   const { account, isLoading: accountLoading } = useAccount();
+  const { isLoggedIn } = useAuth();
+  const [activeTab, setActiveTab] = useState("Información");
 
   const isOwner = account?.accountId === writerAccountId;
 
@@ -86,9 +91,9 @@ export default function NovelInformation({
 
             <p className="text-muted-foreground flex items-center gap-2">
               <span className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xs">
-                H
+                {writerName?.charAt(0)?.toUpperCase() || "U"}
               </span>
-              {writerAccountId}
+              {writerName}
             </p>
           </div>
 
@@ -108,11 +113,16 @@ export default function NovelInformation({
                   Agregar capítulo
                 </Button>
               ) : (
-                <Button className="cursor-pointer">Leer historia</Button>
+                <Button
+                  onClick={() => setActiveTab("Capítulos")}
+                  className="cursor-pointer"
+                >
+                  Leer historia
+                </Button>
               )}
 
               <div className="flex gap-2">
-                {!isOwner && <NovelReportForm novelId={id!} />}
+                {isLoggedIn && !isOwner && <NovelReportForm novelId={id!} />}
                 {isOwner && (
                   <Button
                     onClick={handleEditNovelClick}
@@ -120,7 +130,7 @@ export default function NovelInformation({
                     size="icon"
                     className="cursor-pointer"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-4 h-4 cursor-pointer" />
                   </Button>
                 )}
               </div>
@@ -131,7 +141,7 @@ export default function NovelInformation({
         <div></div>
       </div>
 
-      <Tabs defaultValue="Información" className="h-full flex flex-col">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <TabsList className="w-fit">
           <TabsTrigger value="Información" className="cursor-pointer">
             Información
@@ -163,11 +173,11 @@ export default function NovelInformation({
           </div>
 
           <div>
-            
+
             <ReviewsBox />
           </div>
 
-          
+
         </TabsContent>
       </Tabs>
     </div>

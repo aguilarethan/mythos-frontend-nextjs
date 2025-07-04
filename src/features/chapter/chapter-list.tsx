@@ -51,28 +51,41 @@ export default function ChapterList({ novelId }: ChapterListProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {chapters.map((chapter) => (
-        <Card
-          key={chapter.id}
-          className="flex justify-between items-center p-4 cursor-pointer hover:bg-muted transition-colors"
-          onClick={() => {
-            setSelectedId(chapter.id); // Guardar el ID en el store
-            router.push("/novel/chapter"); // Redirigir a la página del lector
-          }}
-        >
-          <div>
-            <h3 className="text-lg font-semibold">{chapter.title}</h3>
-            <p className="text-sm text-muted-foreground">
-              {new Date(chapter.createdAt).toLocaleDateString()}{" "}
-              {chapter.priceMythras > 0 && "• Requiere pago"}
-            </p>
+  <div className="space-y-2">
+    {chapters.map((chapter) => (
+      <Card
+        key={chapter.id}
+        className="cursor-pointer hover:bg-muted transition-colors p-0"
+        onClick={() => {
+          setSelectedId(chapter.id);
+          router.push("/novel/chapter");
+        }}
+      >
+        <div className="flex items-center justify-between p-4 w-full">
+          {/* Lado izquierdo: Número y título */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+              {chapter.chapterNumber}.
+            </span>
+            <h3 className="text-base font-semibold truncate">
+              {chapter.title}
+            </h3>
           </div>
-          <Button variant="outline" size="sm">
-            Leer
-          </Button>
-        </Card>
-      ))}
-    </div>
-  );
+
+          {/* Lado derecho: Precio y fecha */}
+          <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+            {chapter.priceMythras > 0 && (
+              <span className="font-medium text-xs">
+                {chapter.priceMythras} Mythras
+              </span>
+            )}
+            <span className="text-xs text-muted-foreground">
+              {new Date(chapter.createdAt).toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+      </Card>
+    ))}
+  </div>
+);
 }

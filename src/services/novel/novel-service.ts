@@ -33,7 +33,9 @@ export async function uploadCoverImage(data: UploadCoverImageRequest) {
     return response.data;
   } catch (error: any) {
     const message = error.response?.data?.message || "Error al subir la imagen de portada";
+    console.error("Error uploading cover image:", error);
     throw new Error(message);
+    
   }
 }
 

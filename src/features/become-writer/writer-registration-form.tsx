@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Calendar, MapPin, User, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Account } from "@/services/account/account-interfaces";
 import {
   Card,
   CardContent,
@@ -28,6 +29,7 @@ import type {
   Country,
 } from "@/app/(site)/become-writer/page";
 import { accountService } from "@/services/account/account-service";
+import { useAccount } from "@/hooks/use-account"
 
 const COUNTRIES: Country[] = [
   { code: "ES", name: "España" },
@@ -54,6 +56,7 @@ interface WriterRegistrationFormProps {
 export function WriterRegistrationForm({
   onSuccess,
 }: WriterRegistrationFormProps) {
+  const { account, setAccount } = useAccount();
   const [formData, setFormData] = useState<WriterProfileData>({
     name: "",
     lastName: "",
@@ -130,10 +133,15 @@ export function WriterRegistrationForm({
       // Simulamos una respuesta exitosa
       console.log("Datos enviados al backend:", formData);
       console.log(response.message || "!Te has convertido en escritor!");
+      setAccount({
+        ...account,
+        role: "writer"
+      } as Account);
 
       toast.success(
         "¡Felicidades! Te has convertido en escritor exitosamente. Ahora puedes comenzar a publicar tus obras."
       );
+
 
       onSuccess();
     } catch (error) {
@@ -143,6 +151,7 @@ export function WriterRegistrationForm({
       );
     } finally {
       setIsSubmitting(false);
+
     }
   };
 

@@ -81,7 +81,7 @@ export function NovelReportForm({ novelId }: ReportNovelDialogProps) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="cursor-pointer">
                     <Flag className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
@@ -136,11 +136,11 @@ export function NovelReportForm({ novelId }: ReportNovelDialogProps) {
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="outline">
+                                <Button type="button" variant="outline" className="cursor-pointer">
                                     Cancelar
                                 </Button>
                             </DialogClose>
-                            <Button type="submit">Enviar reporte</Button>
+                            <Button type="submit" className="cursor-pointer">Enviar reporte</Button>
                         </DialogFooter>
                     </form>
                 </Form>

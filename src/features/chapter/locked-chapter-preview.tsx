@@ -25,8 +25,8 @@ export function LockedChapterPreview({
       {/* Vista previa del contenido */}
       <div className="relative">
         <div className="prose prose-lg max-w-none">
-          <div className="text-gray-800 leading-relaxed">
-            <p className="text-base md:text-lg leading-8 text-gray-600">
+          <div className="leading-relaxed">
+            <p className="text-base md:text-lg leading-8">
               {previewContent}
             </p>
           </div>

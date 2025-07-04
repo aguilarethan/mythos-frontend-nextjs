@@ -31,3 +31,9 @@ export interface PurchaseResult {
   message: string
   newBalance?: number
 }
+
+export interface GeneratePDFRequest {
+  chapterNumber: number;
+  title: string;
+  content: string;
+}
