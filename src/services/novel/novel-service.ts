@@ -13,6 +13,17 @@ export async function getLastThreeNovelsPreview() {
   }
 }
 
+export async function getEightMostViewedNovelsPreview() {
+  try {
+    const response = await nodeApi.get("/novels/search/eight-most-viewed-preview");
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error al obtener las ocho novelas más vistas";
+    console.error("Error loading eight most viewed novels:", error);
+    throw new Error(message);
+  }
+}
+
 export async function getNovelById(id: string) {
   try {
     const response = await nodeApi.get(`/novels/${id}`);
