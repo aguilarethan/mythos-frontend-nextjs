@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReviewCard from './review-card';
 import ReviewForm from './review-form';
 import { Button } from '@/components/ui/button';
@@ -31,10 +31,19 @@ const ReviewsBox = () => {
         loadReviews();
     }, [novelId]);
 
+    // Calcular promedio de ratings
+    const averageRating = useMemo(() => {
+        if (reviews.length === 0) return null;
+        const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+        return (total / reviews.length).toFixed(1);
+    }, [reviews]);
+
     return (
         <div className="space-y-1">
             <div className="flex items-center justify-between mb-3">
-                <h2 className="text-2xl font-semibold ">Reseñas</h2>
+                <h2 className="text-2xl font-semibold">
+                    Reseñas {averageRating !== null && <span className="text-muted-foreground text-lg">({averageRating} ★)</span>}
+                </h2>
                 {account && !isLoading && (
                     <Button
                         onClick={() => setShowForm(!showForm)}
@@ -47,10 +56,14 @@ const ReviewsBox = () => {
             </div>
 
             {showForm && account && novelId && (
-                <ReviewForm account={account} novelId={novelId} onReviewSubmitted={(newReview) => {
-                    setReviews([newReview, ...reviews]);
-                    setShowForm(false);
-                }} />
+                <ReviewForm
+                    account={account}
+                    novelId={novelId}
+                    onReviewSubmitted={(newReview) => {
+                        setReviews([newReview, ...reviews]);
+                        setShowForm(false);
+                    }}
+                />
             )}
 
             <div className="space-y-0 mt-0">
@@ -64,8 +77,6 @@ const ReviewsBox = () => {
                     ))
                 )}
             </div>
-
-
         </div>
     );
 };
